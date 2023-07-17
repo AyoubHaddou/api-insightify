@@ -1,0 +1,70 @@
+{
+    "os": "Linux-5.19.0-46-generic-x86_64-with-glibc2.35",
+    "python": "3.9.12",
+    "heartbeatAt": "2023-07-15T17:19:06.463978",
+    "startedAt": "2023-07-15T17:19:05.782956",
+    "docker": null,
+    "cuda": null,
+    "args": null,
+    "state": "running",
+    "program": "<python with no main file>",
+    "host": "ayoub-HP-ZBook-15-G3",
+    "username": "ayoub",
+    "executable": "/home/ayoub/anaconda3/bin/python",
+    "cpu_count": 4,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 3124.2358750000003,
+        "min": 800.0,
+        "max": 3500.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 3116.839,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3128.113,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3122.797,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3119.822,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3129.471,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3100.067,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3099.991,
+            "min": 800.0,
+            "max": 3500.0
+        },
+        {
+            "current": 3101.595,
+            "min": 800.0,
+            "max": 3500.0
+        }
+    ],
+    "disk": {
+        "total": 241.65010833740234,
+        "used": 180.80719757080078
+    },
+    "memory": {
+        "total": 15.497013092041016
+    }
+}

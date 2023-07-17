@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'api-insightify'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1022DF7E27D644BFA540C69903AE32B7 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_DDA9ACE81A3F43E89D2A7E42998EC216 }}

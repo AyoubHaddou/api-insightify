@@ -6,14 +6,14 @@ import os
 from sqlalchemy import create_engine
 load_dotenv()
 
-DATABASE_USER = os.getenv('DATABASE_USER')
-DATABASE_PASSWORD = os.getenv('DATABASE_PASSWORD')
-DATABASE_HOST = os.getenv('DATABASE_HOST')
-DATABASE_PORT = os.getenv('DATABASE_PORT')
-DATABASE_NAME = os.getenv('DATABASE_NAME')
+PGUSER = os.getenv('PGUSER')
+PGPASSWORD = os.getenv('PGPASSWORD')
+PGHOST = os.getenv('PGHOST')
+PGPORT = os.getenv('PGPORT')
+PGDATABASE = os.getenv('PGDATABASE')
 
 
-SQLALCHEMY_DATABASE_URL = f'postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}'
+SQLALCHEMY_DATABASE_URL = f'postgresql://{PGUSER}:{PGPASSWORD}@{PGHOST}:{PGPORT}/{PGDATABASE}'
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
@@ -60,7 +60,7 @@ class TrustpilotPipeline:
         df['text'] = df.title + ' - ' + df.comment 
         print('----------------------------------------------------------------')
         print(os.getenv('TENANT_ID'))
-        print(DATABASE_NAME)
+        print(PGDATABASE)
         df['tenant_id'] = int(os.getenv('TENANT_ID'))
         df['source'] = 'trustpilot'
         df = df[(df.text.isna() == False) & (df.text.values != '') & (df.text.str.len() < 512)]

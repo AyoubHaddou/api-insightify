@@ -159,9 +159,9 @@ def run_scrapping_trustpilot(tenant, url_web):
 #         # Construction de la commande à exécuter avec les variables incorporées
 #         command = (
 #             f'scrapy crawl trustpilotreviews -a TENANT_URL={url_web} -a TENANT_ID={tenant.id} '
-#             f'-a DATABASE_USER={os.getenv("DATABASE_USER")} -a DATABASE_PASSWORD={os.getenv("DATABASE_PASSWORD")} '
-#             f'-a DATABASE_HOST={os.getenv("DATABASE_HOST")} -a DATABASE_PORT={os.getenv("DATABASE_PORT")} '
-#             f'-a DATABASE_NAME={os.getenv("DATABASE_NAME")}'
+#             f'-a PGUSER={os.getenv("PGUSER")} -a PGPASSWORD={os.getenv("PGPASSWORD")} '
+#             f'-a PGHOST={os.getenv("PGHOST")} -a PGPORT={os.getenv("PGPORT")} '
+#             f'-a PGDATABASE={os.getenv("PGDATABASE")}'
 #         )
 
 #         # Exécution de la commande

@@ -1,4 +1,4 @@
-fastapi>=0.97,<0.101
+fastapi==0.97.0
 numpy==1.21.6
 pandas==1.5.2
 pydantic==1.10.2
@@ -7,7 +7,6 @@ python-dotenv==1.0.0
 SQLAlchemy==1.4.32
 SQLAlchemy_Utils==0.40.0
 uvicorn==0.22.0
-gunicorn
 transformers==4.29.2
 torch==1.13.1
 tensorflow==2.11.0
@@ -16,5 +15,6 @@ psycopg2-binary==2.9.5
 protobuf==3.19.1
 emoji==0.6.0
 sentencepiece
-jinja2
+gunicorn 
 python-multipart
+jinja2

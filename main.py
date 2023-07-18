@@ -16,8 +16,3 @@ app.add_middleware(
 )
 
 app.include_router(api_router)
-
-if __name__ == "__main__":
-    print('----------- STARTING UVICORN --------------')
-    uvicorn.run("main:app", host='0.0.0.0', port=8000)
-    print("Running API")

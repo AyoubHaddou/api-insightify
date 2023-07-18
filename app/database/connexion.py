@@ -5,17 +5,12 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-# PGUSER = os.getenv('PGUSER')
-# PGPASSWORD = os.getenv('PGPASSWORD')
-# PGHOST = os.getenv('PGHOST')
-# PGPORT = os.getenv('PGPORT')
-# PGDATABASE = os.getenv('PGDATABASE')
+PGUSER = os.getenv('PGUSER')
+PGPASSWORD = os.getenv('PGPASSWORD')
+PGHOST = os.getenv('PGHOST')
+PGPORT = os.getenv('PGPORT')
+PGDATABASE = os.getenv('PGDATABASE')
 
-PGUSER="leavit_2"
-PGPASSWORD="leavit_2"
-PGHOST="0.0.0.0"
-PGPORT=5432
-PGDATABASE="leavit_2"
 
 SQLALCHEMY_DATABASE_URL = f'postgresql://{PGUSER}:{PGPASSWORD}@{PGHOST}:{PGPORT}/{PGDATABASE}'
 if os.getenv("TESTING"):

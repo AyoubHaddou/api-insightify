@@ -31,3 +31,12 @@ def post_tenant_by_name_adress(tenant: Tenant):
             detail=f'You must give a name and adress values.'
         )
     return crud_tenant.post_tenant(tenant.name, tenant.type, tenant.url_web)
+
+@router.post('/delete', dependencies=[Depends(security.is_authenticated)])
+def post_tenant_by_name_adress(id: int):
+    if not isinstance(id, int):
+        raise HTTPException(
+            status_code=400,
+            detail=f'You must give a valid id as number.'
+        )
+    return crud_tenant.delete_tenant_and_all_reviews(id)

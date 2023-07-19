@@ -16,7 +16,9 @@ def pnn_dict(label):
 
 def predict_single_row(text: str) -> str:
     pred = sentiment_model(text)[0]
-    return pd.Series([pnn_dict(pred['label']), pred['score']])
+    return {'prediction': pnn_dict(pred['label']), 
+            'score': pred['score']}
 
 def predict_multi_rows(texts_list: list) -> list[str]:
-    return pd.Series([[pnn_dict(sentiment_model(i)[0]['label']) for i in texts_list], [sentiment_model(i)[0]['score'] for i in texts_list]])
+    return {'prediction': [pnn_dict(sentiment_model(i)[0]['label']) for i in texts_list], 
+            'score': [sentiment_model(i)[0]['score'] for i in texts_list]}

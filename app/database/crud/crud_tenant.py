@@ -8,6 +8,10 @@ import subprocess
 import os
 from data_integration.helpers.strapi_func import send_all_analysis, send_json_by_type, list_label_nested
 from data_integration.reviews_google_api.scripts_google import run_google_reviews_api
+from app.database.models.analysis import Analysis 
+from app.database.models.entity import Entity 
+from app.database.models.review import Review
+from app.database.models.tenant import Tenant
 
 def get_all_tenant():
     return db.query(Tenant).all()
@@ -30,16 +34,18 @@ def post_tenant(name, type, url_web):
     """
     
     # Check if Tenant is already in the database
-    check = name in [i.name for i in db.query(Tenant).all()]
-    if check:
+    check_name = name in [i.name for i in db.query(Tenant).all()]
+    if check_name:
         raise("Tenant already exists")
-    
+
     # Create and get new tenant 
     new_enreprise = Tenant(name = name, type=type, url_web = url_web)
     db.add(new_enreprise)
     db.commit()
     tenant = get_tenant_by_name(name)
     
+    # Plutot que d'envoyer dans review plutot retourné le df puis concat avec google puis traduction dans une autre colonne puis on envoit ? 
+
     # Scrapping of Trustpilot
     run_scrapping_trustpilot(tenant, url_web)
         
@@ -51,6 +57,7 @@ def post_tenant(name, type, url_web):
    
     # Translate reviews in english for the modele 
     df_reviews = translate_fr_to_en(df_reviews)
+    
     
     df_reviews = run_prediction_pnn(df_reviews)
     
@@ -72,6 +79,35 @@ def post_tenant(name, type, url_web):
     
     return tenant
 
+def delete_tenant_and_all_reviews(tenant_id):
+    
+    # Obtenez le tenant par son tenant_id
+    tenant = db.query(Tenant).filter_by(id=tenant_id).first()
+
+    if tenant is not None:
+        # Supprimer toutes les analyses liées aux commentaires du tenant en utilisant une liste en compréhension
+        analyses = [analysis for analysis in db.query(Analysis).join(Review).filter(Review.tenant_id == tenant_id).all()]
+        db.delete(*analyses)
+
+        # Supprimer tous les commentaires liés au tenant en utilisant une liste en compréhension
+        reviews = [review for review in db.query(Review).filter_by(tenant_id=tenant_id).all()]
+        db.delete(*reviews)
+
+        # Supprimer toutes les entités liées au tenant en utilisant une liste en compréhension
+        entities = [entity for entity in db.query(Entity).filter_by(tenant_id=tenant_id).all()]
+        db.delete(*entities)
+
+        # Supprimer le tenant lui-même
+        db.delete(tenant)
+
+        # Valider et valider les modifications dans la base de données
+        db.commit()
+        
+        print('Success, Tenant and all references deleted')
+        return {'Success': "Tenant and all references deleted"}
+    else:
+        print("Le tenant avec tenant_id spécifié n'existe pas.")
+        return {'Error': "Tenant not found"}
 
 def run_prediction_pnn(df):
     

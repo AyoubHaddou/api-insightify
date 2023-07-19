@@ -65,5 +65,6 @@ class TrustpilotPipeline:
         df['source'] = 'trustpilot'
         df = df[(df.text.isna() == False) & (df.text.values != '') & (df.text.str.len() < 512)]
         df = df.rename(columns={'review_rating': 'rating'})
-        # df[['tenant_id', 'text', 'rating', 'date', 'source']].to_sql('review', engine, index=False, if_exists='append') 
-        df[['tenant_id', 'text', 'rating', 'date', 'source']].to_csv(f'TEST_1.csv', index=False) 
+        print('shape of df - end of spider', df.shape)
+        df[['tenant_id', 'text', 'rating', 'date', 'source']].to_sql('review', engine, index=False, if_exists='append') 
+        # df[['tenant_id', 'text', 'rating', 'date', 'source']].to_csv(f'TEST_1.csv', index=False) 

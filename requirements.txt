@@ -10,7 +10,6 @@ uvicorn==0.22.0
 transformers==4.29.2
 torch==1.13.1
 tensorflow==2.11.0
-psycopg2-binary 
 psycopg2-binary==2.9.5
 protobuf==3.19.1
 emoji==0.6.0
@@ -18,3 +17,4 @@ sentencepiece
 gunicorn 
 python-multipart
 jinja2
+scrapy

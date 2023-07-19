@@ -26,7 +26,6 @@ def run_google_reviews_api(type, name, id):
     df_all = df_all[(df_all.text.isna() == False) & (df_all.text.values != '') & (df_all.text.str.len() < 512)]
     df_all['source'] = 'google'
     print('shape of google reviews datafram: ', df_all.shape)
-    
     df_all[['tenant_id', 'text', 'rating', 'date', 'source']].to_sql('review', engine, index=False, if_exists='append') 
-    df_all[['tenant_id', 'text', 'rating', 'date', 'source']].to_csv(f'review_google_{name}.csv', index=False) 
+    # df_all[['tenant_id', 'text', 'rating', 'date', 'source']].to_csv(f'review_google_{name}.csv', index=False) 
     print('Table review updated')

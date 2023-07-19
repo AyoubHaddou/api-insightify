@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from contextlib import contextmanager
 import os 
 from dotenv import load_dotenv
 load_dotenv()
@@ -25,9 +26,21 @@ DatabaseSession = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
+@contextmanager
+def session_scope():
+    """Provide a transactional scope around a series of operations."""
+    session = DatabaseSession()
+    try:
+        yield session
+        session.commit()
+    except:
+        session.rollback()
+        raise
+    finally:
+        session.close()
+
 def get_connection():
-    Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    session = Session()
-    return session
+    with session_scope() as session:
+        return session
 
 db = get_connection()

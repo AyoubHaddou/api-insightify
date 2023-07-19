@@ -44,41 +44,46 @@ def post_tenant(name, type, url_web):
     db.commit()
     tenant = get_tenant_by_name(name)
     
-    # Plutot que d'envoyer dans review plutot retourné le df puis concat avec google puis traduction dans une autre colonne puis on envoit ? 
+    # # Plutot que d'envoyer dans review plutot retourné le df puis concat avec google puis traduction dans une autre colonne puis on envoit ? 
 
-    # Scrapping of Trustpilot
-    run_scrapping_trustpilot(tenant, url_web)
+    # # Scrapping of Trustpilot
+    # run_scrapping_trustpilot(tenant, url_web)
         
-    # # RUN google api function 
-    run_google_reviews_api(tenant.type, tenant.name, tenant.id)
+    # # # RUN google api function 
+    # run_google_reviews_api(tenant.type, tenant.name, tenant.id)
 
-    # Get df with trustpilot and google reviews  
-    df_reviews = get_df_reviews_from_name(name)
+    # # Get df with trustpilot and google reviews  
+    # df_reviews = get_df_reviews_from_name(name)
    
-    # Translate reviews in english for the modele 
-    df_reviews = translate_fr_to_en(df_reviews)
+    # # Translate reviews in english for the modele 
+    # df_reviews = translate_fr_to_en(df_reviews)
     
     
-    df_reviews = run_prediction_pnn(df_reviews)
+    # df_reviews = run_prediction_pnn(df_reviews)
     
-    df_reviews[['review_id','type', 'prediction_1','score_1']].rename(columns={'prediction_1': 'prediction', 'score_1': 'score'}).to_sql('analysis', engine, index=False, if_exists='append') 
-    print("BDD: Table analysis mis à jour avec succés pour l'analyse PNN")
+    # df_reviews[['review_id','type', 'prediction_1','score_1']].rename(columns={'prediction_1': 'prediction', 'score_1': 'score'}).to_sql('analysis', engine, index=False, if_exists='append') 
+    # print("BDD: Table analysis mis à jour avec succés pour l'analyse PNN")
 
-    df_reviews = run_prediction_nested_1(df_reviews)
+    # df_reviews = run_prediction_nested_1(df_reviews)
     
-    df_reviews[['review_id','type', 'prediction_2','score_2']].rename(columns={'prediction_2': 'prediction', 'score_2': 'score'}).to_sql('analysis', engine, index=False, if_exists='append') 
-    print('Table analysis mis à jour avec la prediction nested_1')
+    # df_reviews[['review_id','type', 'prediction_2','score_2']].rename(columns={'prediction_2': 'prediction', 'score_2': 'score'}).to_sql('analysis', engine, index=False, if_exists='append') 
+    # print('Table analysis mis à jour avec la prediction nested_1')
     
-    df_reviews = run_prediction_nested_2(df_reviews)
+    # df_reviews = run_prediction_nested_2(df_reviews)
     
-    df_reviews[['review_id','type', 'prediction_3','score_3']].rename(columns={'prediction_3': 'prediction', 'score_3': 'score'}).to_sql('analysis', engine, index=False, if_exists='append') 
-    print('Table analysis mis à jour avec la prediction nested_2')
+    # df_reviews[['review_id','type', 'prediction_3','score_3']].rename(columns={'prediction_3': 'prediction', 'score_3': 'score'}).to_sql('analysis', engine, index=False, if_exists='append') 
+    # print('Table analysis mis à jour avec la prediction nested_2')
     
-    # # Send all analysis to strapi.
-    send_all_analysis(df_reviews)
+    # # # Send all analysis to strapi.
+    # send_all_analysis(df_reviews)
     
     return tenant
 
+def delete(row):
+    if row != None:
+        db.delete(row) 
+        db.commit()
+        
 def delete_tenant_and_all_reviews(tenant_id):
     
     # Obtenez le tenant par son tenant_id
@@ -86,23 +91,19 @@ def delete_tenant_and_all_reviews(tenant_id):
 
     if tenant is not None:
         # Supprimer toutes les analyses liées aux commentaires du tenant en utilisant une liste en compréhension
-        analyses = [analysis for analysis in db.query(Analysis).join(Review).filter(Review.tenant_id == tenant_id).all()]
-        db.delete(*analyses)
+        [delete(analysis) for analysis in db.query(Analysis).join(Review).filter(Review.tenant_id == tenant_id).all()]
+        print('Analysis deleted')
 
         # Supprimer tous les commentaires liés au tenant en utilisant une liste en compréhension
-        reviews = [review for review in db.query(Review).filter_by(tenant_id=tenant_id).all()]
-        db.delete(*reviews)
+        [delete(review) for review in db.query(Review).filter_by(tenant_id=tenant_id).all()]
+        print('Review deleted')
 
         # Supprimer toutes les entités liées au tenant en utilisant une liste en compréhension
-        entities = [entity for entity in db.query(Entity).filter_by(tenant_id=tenant_id).all()]
-        db.delete(*entities)
+        [delete(entity) for entity in db.query(Entity).filter_by(tenant_id=tenant_id).all()]
+        print('Entity deleted')
 
         # Supprimer le tenant lui-même
-        db.delete(tenant)
-
-        # Valider et valider les modifications dans la base de données
-        db.commit()
-        
+        delete(tenant)
         print('Success, Tenant and all references deleted')
         return {'Success': "Tenant and all references deleted"}
     else:

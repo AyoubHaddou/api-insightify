@@ -24,7 +24,7 @@ def get_tenant_by_name_adress(name):
     return crud_tenant.get_tenant_by_name_adress(name)
 
 @router.post('/new', dependencies=[Depends(security.is_authenticated)])
-def post_tenant_by_name_adress(tenant: Tenant):
+def post_tenant_by_name_and_url(tenant: Tenant):
     if tenant.name in ['', None] or tenant.url_web in ['', None]:
         raise HTTPException(
             status_code=400,
@@ -33,7 +33,7 @@ def post_tenant_by_name_adress(tenant: Tenant):
     return crud_tenant.post_tenant(tenant.name, tenant.type, tenant.url_web)
 
 @router.post('/delete', dependencies=[Depends(security.is_authenticated)])
-def post_tenant_by_name_adress(id: int):
+def delete_tenant_by_id(id: int):
     if not isinstance(id, int):
         raise HTTPException(
             status_code=400,

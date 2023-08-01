@@ -31,18 +31,21 @@ jobs:
       env:
         PGDATABASE: ${{ secrets.PGDATABASE }}
 
+    - name: Show environment variables
+      run: env
+
     - name: Build and push container image to registry
+      uses: docker/build-push-action@v3
+      with:
+        push: true
+        tags: insightify.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_fea8320391f64c9d9bb7f2b0aff13790 }}/insight-v2:${{ github.sha }}
+        file: ./Dockerfile
       env:  # Définissez ici les variables d'environnement utilisées par votre application lors du build
         PGUSER: ${{ secrets.PGUSER }}
         PGPASSWORD: ${{ secrets.PGPASSWORD }}
         PGHOST: ${{ secrets.PGHOST }}
         PGPORT: ${{ secrets.PGPORT }}
         PGDATABASE: ${{ secrets.PGDATABASE }}
-      uses: docker/build-push-action@v3
-      with:
-        push: true
-        tags: insightify.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_fea8320391f64c9d9bb7f2b0aff13790 }}/insight-v2:${{ github.sha }}
-        file: ./Dockerfile
 
   deploy:
     runs-on: ubuntu-latest

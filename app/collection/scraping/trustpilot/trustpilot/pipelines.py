@@ -12,6 +12,12 @@ PGHOST = os.getenv('PGHOST')
 PGPORT = os.getenv('PGPORT')
 PGDATABASE = os.getenv('PGDATABASE')
 
+if os.getenv("TESTING"):
+    PGUSER = os.getenv('PGUSER_TEST')
+    PGPASSWORD = os.getenv('PGPASSWORD_TEST')
+    PGHOST = os.getenv('PGHOST_TEST')
+    PGPORT = os.getenv('PGPORT_TEST')
+    PGDATABASE = os.getenv('PGDATABASE_TEST')
 
 SQLALCHEMY_DATABASE_URL = f'postgresql://{PGUSER}:{PGPASSWORD}@{PGHOST}:{PGPORT}/{PGDATABASE}'
 
@@ -19,6 +25,7 @@ engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
     pool_pre_ping=True,
 )
+
 
 class TrustpilotPipeline:
     def __init__(self):
@@ -34,6 +41,8 @@ class TrustpilotPipeline:
         titles = item['title']
         comments = item['comment']
         dates = item['date']
+        
+        print(len(review_rating), len(titles), len(comments), len(dates))
 
         for i in range(max(len(review_rating), len(titles), len(comments), len(dates))):
             # Vérifier si la date est présente et non vide
@@ -60,11 +69,10 @@ class TrustpilotPipeline:
         df['text'] = df.title + ' - ' + df.comment 
         print('----------------------------------------------------------------')
         print(os.getenv('TENANT_ID'))
-        print(PGDATABASE)
         df['tenant_id'] = int(os.getenv('TENANT_ID'))
         df['source'] = 'trustpilot'
         df = df[(df.text.isna() == False) & (df.text.values != '') & (df.text.str.len() < 512)]
         df = df.rename(columns={'review_rating': 'rating'})
         print('shape of df - end of spider', df.shape)
         df[['tenant_id', 'text', 'rating', 'date', 'source']].to_sql('review', engine, index=False, if_exists='append') 
-        # df[['tenant_id', 'text', 'rating', 'date', 'source']].to_csv(f'TEST_1.csv', index=False) 
+        df[['tenant_id', 'text', 'rating', 'date', 'source']].to_csv(f'TEST_1.csv', index=False) 

@@ -24,4 +24,3 @@ class TrustpilotreviewsSpider(CrawlSpider):
         item['comment'] = response.xpath('*//div[@class="styles_reviewContent__0Q2Tg"]/p[1]/text()').extract()
         item['date'] = response.xpath('*//div[@class="typography_body-m__xgxZ_ typography_appearance-subtle__8_H2l styles_datesWrapper__RCEKH"]//time/@datetime').extract()
         return item
-

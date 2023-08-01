@@ -2,10 +2,6 @@ import pandas as pd
 from app.database.connexion import engine
 from app.database.crud.crud_reviews import get_df_reviews
 
-# Changer les deux lignes read_csv par le script google qui récupère les avis. 
-# Refaire le script. Get les entreprises, les commentaires, la prédiction puis on enregistre en base. 
-# Faire le 1er scripts qui get la donnée d'entrainement 
-# Puis faire la fonction qui ajoute les entreprises custom 
 
 def seed_db():    
 
@@ -20,16 +16,14 @@ def seed_db():
     print('Tenant table updated successfully')
 
     # reviws table
-    df_all = pd.read_csv("model/all_reviews_en_july_14_pnn_and_nested_2_4.csv")
+    df_all = pd.read_csv("app/database/all_reviews_en_july_14_pnn_and_nested_2_4.csv")
     df_reviews = df_all[['tenant_id','text', 'rating', 'date', 'source']]
     df_reviews.to_sql('review', engine, index=False, if_exists='append')
     print('reviews table updated successfully')
 
-    # # id,tenant_id,text,rating,date,source,prediction_1,score_1,prediction_2,score_2,prediction_3,score_3
     # analysis table
     df_reviews = get_df_reviews()
     df = df_reviews.merge(df_all.drop('id',axis=1), on=['tenant_id','text', 'rating', 'date', 'source'])
-
     df = df.rename({'id': 'review_id'}, axis=1)
     
     df['type'] = 'PNN'

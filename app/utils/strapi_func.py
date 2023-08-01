@@ -3,6 +3,8 @@ from datetime import datetime, date
 import requests 
 import json 
 import os 
+from dotenv import load_dotenv
+load_dotenv()
 
 list_label_nested = {
     "positive": {
@@ -28,20 +30,22 @@ types = {
 }
 
 def prepare_pnn_data(df, month='2023-06', tenant_id=1):
-    
-    df[['positive', 'negative', 'neutral']] = 0
-    df.loc[df['prediction_1'] == 'positive', 'positive'] += 1
-    df.loc[df['prediction_1'] == 'negative', 'negative'] += 1
-    df.loc[df['prediction_1'] == 'neutral', 'neutral'] += 1
 
     df['date'] = pd.to_datetime(df['date'])
     df['date'] = df['date'].dt.strftime('%Y-%m')
 
     start_date = datetime.strptime(month, '%Y-%m')
     end_date = (start_date.replace(day=1) + pd.DateOffset(months=1) - pd.DateOffset(days=1)).strftime('%Y-%m-%d')
-    mask = (df['date'] >= month) & (df['date'] <= end_date)
+    mask = (df['date'] >= month) & (df['date'] <= end_date) & (df.tenant_id == tenant_id)
+    
+    df = df[mask]
+    
+    df[['positive', 'negative', 'neutral']] = 0
+    df.loc[df['prediction_1'] == 'positive', 'positive'] += 1
+    df.loc[df['prediction_1'] == 'negative', 'negative'] += 1
+    df.loc[df['prediction_1'] == 'neutral', 'neutral'] += 1
 
-    df = df[mask].groupby('date', as_index=False).agg({'negative': 'sum', 'positive': 'sum', 'neutral': 'sum'})
+    df = df.groupby('date', as_index=False).agg({'negative': 'sum', 'positive': 'sum', 'neutral': 'sum'})
 
     data_dict = df[['negative', 'positive', 'neutral']].astype(int).to_dict(orient='records')
 

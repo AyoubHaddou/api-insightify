@@ -16,7 +16,7 @@ all_coord = [lille_coord, paris_coord, marseille_coord, lyon_coord, reims_coord,
 
 def generate_entreprises_by_name(coord, keyword='Decathlon', type='store'):
 
-    num_limit = 50
+    num_limit = 80
 
     names = []
     ratings = []
@@ -53,8 +53,8 @@ def generate_entreprises_by_name(coord, keyword='Decathlon', type='store'):
                 place_ids.append(place_id)
                 addresses.append(address)
 
-        if "next_page_token" not in data or len(names) >= num_limit:
-            print(len(names), "found in", coord)
+        if "next_page_token" not in data or len(place_ids) >= num_limit:
+            print(len(place_ids), "found in", coord)
             break
 
         next_page_token = data["next_page_token"]

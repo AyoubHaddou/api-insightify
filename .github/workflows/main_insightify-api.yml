@@ -27,7 +27,7 @@ jobs:
         password: ${{ secrets.AzureAppService_ContainerPassword_992534c2fa0f404f995a106f2d2dac63 }}
 
     - name: test echo 
-      run: echo database ${{ secrets.PGDATABASE }}
+      run: echo "my database is $PGDATABASE or ${{ secrets.PGDATABASE }}"
       env:
         PGDATABASE: ${{ secrets.PGDATABASE }}
 

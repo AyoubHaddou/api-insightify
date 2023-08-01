@@ -27,6 +27,12 @@ jobs:
         password: ${{ secrets.AzureAppService_ContainerPassword_992534c2fa0f404f995a106f2d2dac63 }}
 
     - name: Build and push container image to registry
+      env:  # Définissez ici les variables d'environnement utilisées par votre application lors du build
+        PGUSER: ${{ secrets.PGUSER }}
+        PGPASSWORD: ${{ secrets.PGPASSWORD }}
+        PGHOST: ${{ secrets.PGHOST }}
+        PGPORT: ${{ secrets.PGPORT }}
+        PGDATABASE: ${{ secrets.PGDATABASE }}
       uses: docker/build-push-action@v3
       with:
         push: true
@@ -39,12 +45,6 @@ jobs:
     environment:
       name: 'production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    env:  # Définissez ici les variables d'environnement utilisées par votre application lors du déploiement
-      PGUSER: ${{ secrets.PGUSER }}
-      PGPASSWORD: ${{ secrets.PGPASSWORD }}
-      PGHOST: ${{ secrets.PGHOST }}
-      PGPORT: ${{ secrets.PGPORT }}
-      PGDATABASE: ${{ secrets.PGDATABASE }}
 
     steps:
     - name: Deploy to Azure Web App

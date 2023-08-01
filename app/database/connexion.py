@@ -12,6 +12,13 @@ PGHOST = os.getenv('PGHOST')
 PGPORT = os.getenv('PGPORT')
 PGDATABASE = os.getenv('PGDATABASE')
 
+if os.getenv("TESTING") == "true":
+    PGUSER = os.getenv('PGUSER_TEST')
+    PGPASSWORD = os.getenv('PGPASSWORD_TEST')
+    PGHOST = os.getenv('PGHOST_TEST')
+    PGPORT = os.getenv('PGPORT_TEST')
+    PGDATABASE = os.getenv('PGDATABASE_TEST')
+
 SQLALCHEMY_DATABASE_URL = f'postgresql://{PGUSER}:{PGPASSWORD}@{PGHOST}:{PGPORT}/{PGDATABASE}'
 
 engine = create_engine(

@@ -26,6 +26,11 @@ jobs:
         username: ${{ secrets.AzureAppService_ContainerUsername_fea8320391f64c9d9bb7f2b0aff13790 }}
         password: ${{ secrets.AzureAppService_ContainerPassword_992534c2fa0f404f995a106f2d2dac63 }}
 
+    - name: test echo 
+      run: echo database ${{ secrets.PGDATABASE }}
+      env:
+        PGDATABASE: ${{ secrets.PGDATABASE }}
+
     - name: Build and push container image to registry
       env:  # Définissez ici les variables d'environnement utilisées par votre application lors du build
         PGUSER: ${{ secrets.PGUSER }}

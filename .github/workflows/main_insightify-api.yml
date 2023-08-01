@@ -33,7 +33,7 @@ jobs:
         push: true
         tags: insightify.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_fea8320391f64c9d9bb7f2b0aff13790 }}/insight-v2:${{ github.sha }}
         file: ./Dockerfile
-      secrets:  
+      env:  
         PGUSER: ${{ secrets.PGUSER }}
         PGPASSWORD: ${{ secrets.PGPASSWORD }}
         PGHOST: ${{ secrets.PGHOST }}

@@ -1,0 +1,51 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Build and deploy container app to Azure Web App - insightify-api
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: 'ubuntu-latest'
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Log in to registry
+      uses: docker/login-action@v2
+      with:
+        registry: https://insightify.azurecr.io/
+        username: ${{ secrets.AzureAppService_ContainerUsername_fea8320391f64c9d9bb7f2b0aff13790 }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_992534c2fa0f404f995a106f2d2dac63 }}
+
+    - name: Build and push container image to registry
+      uses: docker/build-push-action@v3
+      with:
+        push: true
+        tags: insightify.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_fea8320391f64c9d9bb7f2b0aff13790 }}/insight-v2:${{ github.sha }}
+        file: ./Dockerfile
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+    - name: Deploy to Azure Web App
+      id: deploy-to-webapp
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'insightify-api'
+        slot-name: 'production'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_4b68720406564585afb94b915ca77db4 }}
+        images: 'insightify.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_fea8320391f64c9d9bb7f2b0aff13790 }}/insight-v2:${{ github.sha }}'

@@ -2,6 +2,7 @@ import pandas as pd
 
 from app.utils.google_func import generate_reviews, all_coord, generate_entreprises_by_name
 from app.database.connexion import engine
+from sentry_sdk import capture_message
 
 
 def run_google_reviews_api(type, name, id):
@@ -16,6 +17,7 @@ def run_google_reviews_api(type, name, id):
         df_second = generate_entreprises_by_name(coord=coord, keyword=name, type=type)
         df_all = pd.concat([df_all, df_second])
     
+    capture_message('COLLECT BY GOOGLE API DONE')
     df_all = df_all[df_all.name.str.contains(name)]
     df_all['tenant_id'] = id
     
@@ -31,4 +33,5 @@ def run_google_reviews_api(type, name, id):
     print('shape of google reviews datafram: ', df_all.shape)
     
     df_all[['tenant_id', 'text', 'rating', 'date', 'source']].to_sql('review', engine, index=False, if_exists='append') 
+    capture_message('REQUESTS POSTGRES DONE')
     print('Table review updated')

@@ -1,5 +1,6 @@
 import pandas as pd 
 from datetime import datetime, date
+from sentry_sdk import capture_message
 import requests 
 import json 
 import os 
@@ -146,3 +147,4 @@ def send_all_analysis(df):
     for id in df.tenant_id.unique():
         for type in types:
             send_json_by_type(df, id, type)
+            capture_message("REQUESTS STRAPI DONE")

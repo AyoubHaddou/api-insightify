@@ -6,6 +6,7 @@ from app.database.models.tenant import Tenant
 import pandas as pd
 import subprocess
 import os
+from sentry_sdk import capture_message
 from app.utils.strapi_func import send_all_analysis, list_label_nested
 from app.collection.google_api.scripts_google import run_google_reviews_api
 from app.database.models.analysis import Analysis
@@ -45,6 +46,7 @@ def post_tenant(tenant_name, tenant_type, tenant_url_web):
     new_enreprise = Tenant(name=tenant_name, type=tenant_type, url_web=tenant_url_web)
     db.add(new_enreprise)
     db.commit()
+    capture_message('NEW TENANT')
     tenant = get_tenant_by_name(tenant_name)
 
 
@@ -64,6 +66,7 @@ def post_tenant(tenant_name, tenant_type, tenant_url_web):
     (df_reviews[['review_id', 'text_en', 'source_translation']]
      .to_sql('translation', engine, index=False, if_exists='append')
     )
+    capture_message('REQUESTS POSTGRES DONE')
     
     # PNN prediction
     df_reviews = run_prediction_pnn(df_reviews)
@@ -73,6 +76,7 @@ def post_tenant(tenant_name, tenant_type, tenant_url_web):
      .rename(columns={'prediction_1': 'prediction', 'score_1': 'score', 'type_1': 'type'})
      .to_sql('analysis', engine, index=False, if_exists='append')
     )
+    capture_message('REQUESTS POSTGRES DONE')
     print("BDD: Table analysis mis à jour avec succés pour l'analyse PNN")
 
     # Nested_1 prediction
@@ -83,6 +87,7 @@ def post_tenant(tenant_name, tenant_type, tenant_url_web):
      .rename(columns={'prediction_2': 'prediction', 'score_2': 'score', 'type_2': 'type'})
      .to_sql('analysis', engine, index=False, if_exists='append')
     )
+    capture_message('REQUESTS POSTGRES DONE')
     print('Table analysis mis à jour avec la prediction nested_1')
 
     # Nested_2 prediction
@@ -93,10 +98,11 @@ def post_tenant(tenant_name, tenant_type, tenant_url_web):
      .rename(columns={'prediction_3': 'prediction', 'score_3': 'score', 'type_3': 'type'})
      .to_sql('analysis', engine, index=False, if_exists='append')
     )
+    capture_message('REQUESTS POSTGRES DONE')
     print('Table analysis mis à jour avec la prediction nested_2')
     
     # # # Send all analysis to strapi.
-    # send_all_analysis(df_reviews)
+    send_all_analysis(df_reviews)
 
     return tenant
 
@@ -204,6 +210,7 @@ def run_scrapping_trustpilot(tenant_id, url_web):
     finally:
         # Retour à l'emplacement d'origine
         os.chdir(original_directory)
+        capture_message("COLLECT BY SCRAPING DONE")
         print('web scraping completed')
 
 def delete(row):

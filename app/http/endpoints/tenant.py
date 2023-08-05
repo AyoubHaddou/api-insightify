@@ -3,7 +3,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.schemas.schema_tenant import Tenant
 from app.http.guards import auth as security 
 import app.database.crud.crud_tenant as crud_tenant
-from app.database.connexion import engine 
 
 router = APIRouter(
     prefix="/tenant",
@@ -13,7 +12,6 @@ router = APIRouter(
 
 @router.get('/all', dependencies=[Depends(security.is_authenticated)])
 def get_all_tenant():
-    print(engine)
     return crud_tenant.get_all_tenant()
 
 @router.get('/tenant-by-name', dependencies=[Depends(security.is_authenticated)])

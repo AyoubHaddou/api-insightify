@@ -12,7 +12,10 @@ PGHOST = os.getenv('PGHOST')
 PGPORT = os.getenv('PGPORT')
 PGDATABASE = os.getenv('PGDATABASE')
 
-if os.getenv("TESTING"):
+tenant_id = int(os.getenv('TENANT_ID'))
+TENANT_MONTH= os.getenv('TENANT_MONTH')
+
+if os.getenv("TESTING") == 'true':
     PGUSER = os.getenv('PGUSER_TEST')
     PGPASSWORD = os.getenv('PGPASSWORD_TEST')
     PGHOST = os.getenv('PGHOST_TEST')
@@ -42,7 +45,7 @@ class TrustpilotPipeline:
         comments = item['comment']
         dates = item['date']
         
-        print(len(review_rating), len(titles), len(comments), len(dates))
+        print(len(review_rating), len(comments), len(dates))
 
         for i in range(max(len(review_rating), len(titles), len(comments), len(dates))):
             # Vérifier si la date est présente et non vide
@@ -66,13 +69,29 @@ class TrustpilotPipeline:
         df = pd.DataFrame(self.data)
         df.title = df.title.astype(str)
         df.comment = df.comment.astype(str)
-        df['text'] = df.title + ' - ' + df.comment 
-        print('----------------------------------------------------------------')
-        print(os.getenv('TENANT_ID'))
-        df['tenant_id'] = int(os.getenv('TENANT_ID'))
+        df.comment = df.title + ' - ' + df.comment 
+        df = df.rename(columns={'comment': 'text'})
+        df['text'] = df['text'].str.strip().str[0:511]
+
+        print(f"tenant_id : {tenant_id}")
+        df['tenant_id'] = tenant_id
         df['source'] = 'trustpilot'
+        
+        rows_before = df.shape[0]
         df = df[(df.text.isna() == False) & (df.text.values != '') & (df.text.str.len() < 512)]
+        
         df = df.rename(columns={'review_rating': 'rating'})
-        print('shape of df - end of spider', df.shape)
+        
+        if isinstance(TENANT_MONTH, str):
+            print('IM IN isinsrtance tenant_month, str')
+            year, month = map(int, TENANT_MONTH.split('-'))
+            df['date'] = pd.to_datetime(df['date'], errors='coerce')
+            mask = (df['date'].dt.year == year) & (df['date'].dt.month == month)
+            df = df[mask]
+            
+        print('shape before cleaning', rows_before)
+        print('shape after cleaning', df.shape)
+        
+        print('tenant_month', TENANT_MONTH)
+
         df[['tenant_id', 'text', 'rating', 'date', 'source']].to_sql('review', engine, index=False, if_exists='append') 
-        df[['tenant_id', 'text', 'rating', 'date', 'source']].to_csv(f'TEST_1.csv', index=False) 

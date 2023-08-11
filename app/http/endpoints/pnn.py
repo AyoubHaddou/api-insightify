@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from app.http.guards import auth as security 
-from app.utils import crud_pnn 
+from app.utils import pnn_func 
 
 router = APIRouter(
     prefix="/pnn",
@@ -15,7 +15,7 @@ def prediction_single_row(text:str):
             status_code=400,
             detail=f'Please send a text between 1 and 512 characters'
         )
-    return crud_pnn.predict_single_row(text)
+    return pnn_func.predict_single_row(text)
 
 @router.post('/multi', dependencies=[Depends(security.is_authenticated)])
 def prediction_multi_row(texts_list: list):
@@ -24,4 +24,4 @@ def prediction_multi_row(texts_list: list):
     for text in texts_list: 
         if len(text) < 1 or len(text) > 512:
             raise HTTPException(status_code=400, detail=f'Please provides only texts between 1 and 512 characters')
-    return crud_pnn.predict_multi_rows(texts_list)
+    return pnn_func.predict_multi_rows(texts_list)

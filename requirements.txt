@@ -19,3 +19,5 @@ gunicorn
 python-multipart
 jinja2
 scrapy
+twisted
+bs4

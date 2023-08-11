@@ -8,6 +8,7 @@ class Review(Base):
 
     id = Column(Integer, primary_key=True)
     tenant_id = Column(Integer, ForeignKey('tenant.id'))
+    entity_id = Column(Integer, ForeignKey('entity.id'), default=None)
     text = Column(String)
     rating = Column(Integer)
     date = Column(String)

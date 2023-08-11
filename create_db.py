@@ -13,9 +13,12 @@ import pandas as pd
 def init_db():
     if not database_exists(engine.url):
         create_database(engine.url)
+        print("BDD CREATED")
+    # Base.metadata.drop_all(engine)
+    # print('ALL TABLES DELETED')
     if not engine.has_table(Tenant.__tablename__):
         Base.metadata.create_all(engine)
-        print("BDD créée avec succès")
+        print("TABLES CREER AVEC SUCCES")
         seed_db()
         
 if __name__ == "__main__":

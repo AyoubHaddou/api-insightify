@@ -76,7 +76,7 @@ def process_monthly_tenant_reviews(tenant, month):
     run_google_reviews_api(tenant.type, tenant.name, tenant.id, month=month)
     
     # Get new df with trustpilot and google reviews by month
-    df_reviews = get_df_reviews_from_name_by_month(tenant.name, month=month)[0:5]
+    df_reviews = get_df_reviews_from_name_by_month(tenant.name, month=month)
     
     if df_reviews.shape[0] == 0:
         logger.info(f'No records for this date : {month}')

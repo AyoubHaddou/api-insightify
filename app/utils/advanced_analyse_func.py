@@ -1,9 +1,8 @@
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from app.utils.strapi_func import list_label_nested
-from datetime import datetime
+from logging_config import logger
 import torch, string, random
 import pandas as pd 
-import json 
 
 tokenizer = AutoTokenizer.from_pretrained("DAMO-NLP-SG/zero-shot-classify-SSTuning-base")
 model_zero_shot = AutoModelForSequenceClassification.from_pretrained("DAMO-NLP-SG/zero-shot-classify-SSTuning-base")
@@ -32,7 +31,7 @@ def check_text(model, text, list_label, shuffle=False):
     return pd.Series([list_label_new[predictions], round(probabilities[predictions]*100,2)])
 
 def run_prediction_nested_1(df):
-    print('Predictions nested_1 des avis en cours...')
+    logger.info('Predictions nested_1 des avis en cours...')
     df[['prediction_2', 'score_2']] = df.apply(lambda x: check_text(model_zero_shot, x['text_en'], [
                                                i for i in list_label_nested[x['prediction_1']].keys()]), axis=1)
     df['type_2'] = 'nested_1'
@@ -40,7 +39,7 @@ def run_prediction_nested_1(df):
 
 
 def run_prediction_nested_2(df):
-    print('Predictions nested_2 des avis en cours...')
+    logger.info('Predictions nested_2 des avis en cours...')
     df[['prediction_3', 'score_3']] = df.apply(lambda x: check_text(
         model_zero_shot, x['text_en'],  list_label_nested[x['prediction_1']][x['prediction_2']]), axis=1)
     df['type_3'] = 'nested_2'

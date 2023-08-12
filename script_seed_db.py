@@ -4,13 +4,14 @@ from app.database.models.entity import Entity
 from app.database.models.review import Review
 from app.database.models.tenant import Tenant
 from app.database.models.translation import Translation
+from logging_config import logger
 
 names = ['Decathlon', 'Leroy Merlin', 'Norauto']
 url_webs = ['www.decathlon.fr', 'www.leroymerlin.fr', 'www.norauto.fr']
 types = [ 'store', 'store', 'car_repair']
 
 for name, url_web, type in zip(names, url_webs, types):
-    print('new TENANT in START', name)
+    logger.info('new TENANT in START', name)
     crud_tenant.post_tenant(name, type, url_web)
     
     

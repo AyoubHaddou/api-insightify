@@ -61,12 +61,10 @@ def send_json_by_type(df, tenant_id, prediction_type):
             result = prepare_pnn_data(df, month, tenant_id)  # Replace with actual preparation function
             result = {'data': result}
             requests.post('https://strapi.insightify.tech/api/analyses', headers=header, json=result)
-            print(result)
         elif prediction_type in ["text_neutral", "text_positive", "text_negative"]:
             result = prepare_advanced_analyse(df, month, tenant_id, types_mapping[prediction_type])  # Replace with actual preparation function
             result = {'data': result}
             requests.post('https://strapi.insightify.tech/api/analyses', headers=header, json=result)
-            print(result)
         else:
             raise ValueError(f"Unknown type {type}")
         

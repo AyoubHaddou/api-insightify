@@ -77,19 +77,19 @@ class TrustpilotPipeline:
         df['tenant_id'] = tenant_id
         df['source'] = 'trustpilot'
         
-        rows_before = df.shape[0]
+        shape_before = df.shape
         df = df[(df.text.isna() == False) & (df.text.values != '') & (df.text.str.len() < 512)]
         
         df = df.rename(columns={'review_rating': 'rating'})
         
-        if isinstance(TENANT_MONTH, str):
+        if TENANT_MONTH != 'None':
             print('IM IN isinsrtance tenant_month, str')
             year, month = map(int, TENANT_MONTH.split('-'))
             df['date'] = pd.to_datetime(df['date'], errors='coerce')
             mask = (df['date'].dt.year == year) & (df['date'].dt.month == month)
             df = df[mask]
             
-        print('shape before cleaning', rows_before)
+        print('shape before cleaning', shape_before)
         print('shape after cleaning', df.shape)
         
         print('tenant_month', TENANT_MONTH)

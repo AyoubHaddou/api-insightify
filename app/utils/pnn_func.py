@@ -3,9 +3,7 @@ from transformers import pipeline
 from sentry_sdk import capture_message
 from datetime import datetime
 import json 
-import warnings
-warnings.filterwarnings("ignore")
-
+from logging_config import logger 
 sentiment_model = pipeline(model="IAyoub/finetuning-bert-sentiment-reviews-2")
 
 def pnn_dict(label):
@@ -17,7 +15,7 @@ def pnn_dict(label):
     return label_dict[label]
 
 def run_prediction_pnn(df):
-    print('Predictions PNN des avis en cours...')
+    logger.info('Predictions PNN des avis en cours...')
     pred = predict_multi_rows(df.text_en.to_list())
     pred = pd.Series([v for v in pred.values()])
     df[['prediction_1', 'score_1']] = pred

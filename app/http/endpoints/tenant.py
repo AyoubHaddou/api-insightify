@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.schemas.schema_tenant import Tenant
 from app.http.guards import auth as security 
 import app.database.crud.crud_tenant as crud_tenant
+from logging_config import logger 
 
 router = APIRouter(
     prefix="/tenant",
@@ -14,6 +15,7 @@ router = APIRouter(
 
 @router.get('/all', dependencies=[Depends(security.is_authenticated)])
 def get_all_tenant():
+    logger.info(msg='GET ALL TENANT')
     return crud_tenant.get_all_tenant()
 
 @router.get('/tenant-by-name', dependencies=[Depends(security.is_authenticated)])
@@ -32,11 +34,12 @@ def post_tenant_by_name_and_url(tenant: Tenant):
             status_code=400,
             detail='You must give a name and url_web values.'
         )
-    return crud_tenant.post_tenant(tenant.name, tenant.type, tenant.url_web)
+    crud_tenant.post_tenant(tenant.name, tenant.type, tenant.url_web)
+    return {'success': f'Tenant {tenant.name} updated successfully'}
 
 @router.post('/delete', dependencies=[Depends(security.is_authenticated)])
 def delete_tenant_by_id(tenant_id: int):
-    if not isinstance(id, int):
+    if not isinstance(tenant_id, int):
         raise HTTPException(
             status_code=400,
             detail=f'You must give a valid id as number.'
@@ -45,7 +48,7 @@ def delete_tenant_by_id(tenant_id: int):
 
 @router.post('/delete-month', dependencies=[Depends(security.is_authenticated)])
 def delete_reviews_of_tenant_by_month(tenant_id: int, month: str):
-    if not isinstance(id, int):
+    if not isinstance(tenant_id, int):
         raise HTTPException(
             status_code=400,
             detail=f'You must give a valid id as number.'
@@ -54,14 +57,14 @@ def delete_reviews_of_tenant_by_month(tenant_id: int, month: str):
 
 @router.post('/process-monthly-by-tenant', dependencies=[Depends(security.is_authenticated)])
 def run_monthly_process_by_tenant_id(tenant_id: int, month: str):
-    if not isinstance(id, int) and not isinstance(month, str):
+    if not isinstance(tenant_id, int) and not isinstance(month, str):
         raise HTTPException(
             status_code=400,
-            detail=f'You must give a valid month as string.'
+            detail=f'You must give a valid month as string and tenant_id as integer.'
         )
+    return crud_tenant.upadate_monthly_by_tenant(tenant_id, month)
     
-    tenant = crud_tenant.get_tenant_by_id(tenant_id)
-    return process_monthly_tenant_reviews(tenant, month)
+
 
 @router.post('/process-monthly-all-tenants', dependencies=[Depends(security.is_authenticated)])
 def update_month_all_tenants(month: str):
@@ -74,3 +77,4 @@ def update_month_all_tenants(month: str):
     for tenant_id in list_tenant_ids:
         tenant = crud_tenant.get_tenant_by_id(tenant_id)
         process_monthly_tenant_reviews(tenant, month)
+    return {'Success': 'Tenants updated'}

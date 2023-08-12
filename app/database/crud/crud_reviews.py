@@ -3,6 +3,7 @@ from sqlalchemy import text
 from app.database.connexion import db, engine 
 from app.database.models.review import Review
 from app.database.models.tenant import Tenant
+from logging_config import logger
 
 def get_all_reviews():
     return db.query(Review).all()
@@ -49,3 +50,6 @@ def delete_reviews_by_month_and_tenant(tenant_id, month):
     
     with engine.connect() as connection:
         connection.execute(query, tenant_id=tenant_id, year_month=f'{year}-{month:02}')
+        
+    logger.info(f'Successfull date {year}-{month} deleted for tenant_id : {tenant_id}')
+    return {'Sucess': f'{year}-{month:02} data of tenant id {tenant_id} deleted'}

@@ -1,6 +1,7 @@
 import jwt 
 from datetime import datetime, timedelta
 from fastapi import Depends, Query, Header, HTTPException
+from logging_config import logger
 import os 
 from dotenv import load_dotenv
 load_dotenv()
@@ -11,7 +12,7 @@ def is_authenticated(jwt_token: str = Header()):
     APP_CLIENT = os.getenv('APP_CLIENT')
     
     if jwt_token in [None, ""]:
-        print('No access token found')
+        logger.debug('No access token found')
         raise HTTPException(status_code=401, detail='No access token found')
     
     try:

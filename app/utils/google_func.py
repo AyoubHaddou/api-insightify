@@ -1,3 +1,4 @@
+from logging_config import logger 
 import time
 import requests
 import pandas as pd
@@ -54,7 +55,7 @@ def generate_entreprises_by_name(search_coord, search_name, search_type):
                 tenant_addresses.append(address)
 
         if "next_page_token" not in data or len(tenant_place_ids) >= num_limit:
-            print(len(tenant_place_ids), "found in", search_coord)
+            logger.info(len(tenant_place_ids), "found in", search_coord)
             break
 
         next_page_token = data["next_page_token"]

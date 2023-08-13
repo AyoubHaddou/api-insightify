@@ -6,19 +6,10 @@ from app.database.models.tenant import Tenant
 from app.database.models.translation import Translation
 from logging_config import logger
 
-names = ['Decathlon', 'Leroy Merlin', 'Norauto']
-url_webs = ['www.decathlon.fr', 'www.leroymerlin.fr', 'www.norauto.fr']
-types = [ 'store', 'store', 'car_repair']
+tenant_names = ['Decathlon', 'Leroy Merlin', 'Norauto']
+tenant_url_webs = ['www.decathlon.fr', 'www.leroymerlin.fr', 'www.norauto.fr']
+tenant_types = [ 'store', 'store', 'car_repair']
 
-for name, url_web, type in zip(names, url_webs, types):
-    logger.info('new TENANT in START', name)
-    crud_tenant.post_tenant(name, type, url_web)
-    
-    
-    
-# from app.utils.data_processing import process_monthly_tenant_reviews
-
-# tenant_id = 4
-# month = '2023-08'
-# tenant = crud_tenant.get_tenant_by_id(tenant_id)
-# process_monthly_tenant_reviews(tenant, month)
+for tenant_name, tenant_url_web, tenant_type in zip(tenant_names, tenant_url_webs, tenant_types):
+    logger.info('new TENANT in START', tenant_name)
+    crud_tenant.post_tenant(tenant_name, tenant_type, tenant_url_web)

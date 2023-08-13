@@ -4,6 +4,8 @@ import requests
 import pandas as pd
 import datetime
 import os 
+from dotenv import load_dotenv
+load_dotenv()
 
 lille_coord = "50.6292,3.0573"
 paris_coord = "48.868989, 2.351839"
@@ -74,7 +76,7 @@ def generate_reviews(place_id, entity_id, month=None):
 
     response = requests.get(url)
     data = response.json()
-
+    
     if response.status_code == 200:
         if "reviews" in data["result"]:
             reviews = data["result"]["reviews"]

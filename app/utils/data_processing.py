@@ -101,6 +101,8 @@ def process_monthly_tenant_reviews(tenant, month):
     # get reviews from tenant_id 
     df_reviews = get_all_review_data_by_tenant_id(tenant.id, month=month)
     
+    logger.info('starting STEP : SENDING TO STRAPI')
+    
     # Send all analyses to Strapi BDD
     send_all_analysis(df_reviews)
     

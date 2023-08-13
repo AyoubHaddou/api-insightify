@@ -17,5 +17,7 @@ RUN python create_db.py
 # Exposition du port utilisé par l'API (ajustez si nécessaire)
 EXPOSE 80
 
+RUN pytest
+
 # Commande pour lancer l'API FastAPI
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--proxy-headers"]

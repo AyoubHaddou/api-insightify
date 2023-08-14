@@ -31,7 +31,7 @@ def new_tenant(tenant_name, tenant_type, tenant_url_web):
 def get_all_tenants_id():
     return [tenant.id for tenant in db.query(Tenant).all()]
 
-def post_tenant(tenant_name, tenant_type, tenant_url_web):
+def post_tenant(tenant_name, tenant_type, tenant_url_web, user_id=None):
     """
     Args:
         name (str): The name of the tenant
@@ -52,11 +52,10 @@ def post_tenant(tenant_name, tenant_type, tenant_url_web):
     if tenant is None:
         raise ValueError("Tenant object is None")
     
-    process_tenant_reviews(tenant)
+    process_tenant_reviews(tenant, user_id)
 
 
-
-def upadate_monthly_by_tenant(tenant_id, month):
+def upadate_monthly_by_tenant(tenant_id, month, user_id):
     
     tenant = get_tenant_by_id(tenant_id)
     
@@ -64,33 +63,7 @@ def upadate_monthly_by_tenant(tenant_id, month):
         raise ValueError("Tenant object is None")
     logger.info('starting monthly process')
 
-    return process_monthly_tenant_reviews(tenant, month)
-
-
-
-
-def post_tenant_monthly(tenant_name, tenant_type, tenant_url_web):
-    """
-    Args:
-        name (str): The name of the tenant
-        type (str): the type of tenant (Should match with google type. Store - restaurant - supermarket - cafe - hotel - bakery - car_repair - hair_care)
-        url_web (str): Should be like www.domain.com 
-    Returns:
-        tenant: dict  
-    """
-
-    # Check if Tenant is already in the database
-    check_name = db.query(Tenant).filter_by(name=tenant_name).first()
-    if check_name:
-        raise ("Tenant already exists")
-
-    # Create and get new tenant
-    new_tenant(tenant_name, tenant_type, tenant_url_web)
-    
-    tenant = get_tenant_by_name(tenant_name)
-    
-    return process_tenant_reviews(tenant)
-
+    return process_monthly_tenant_reviews(tenant, month, user_id)
 
 
 def delete_tenant_and_all_reviews(tenant_id):

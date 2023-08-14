@@ -34,7 +34,7 @@ def post_tenant_by_name_and_url(tenant: Tenant):
             status_code=400,
             detail='You must give a name and url_web values.'
         )
-    crud_tenant.post_tenant(tenant.name, tenant.type, tenant.url_web)
+    crud_tenant.post_tenant(tenant.name, tenant.type, tenant.url_web, tenant.user_id)
     return {'success': f'Tenant {tenant.name} updated successfully'}
 
 @router.post('/delete', dependencies=[Depends(security.is_authenticated)])
@@ -64,10 +64,8 @@ def run_monthly_process_by_tenant_id(tenant_id: int, month: str):
         )
     return crud_tenant.upadate_monthly_by_tenant(tenant_id, month)
     
-
-
 @router.post('/process-monthly-all-tenants', dependencies=[Depends(security.is_authenticated)])
-def update_month_all_tenants(month: str):
+def update_month_all_tenants(month: str, user_id : int = None):
     if not isinstance(month, str):
         raise HTTPException(
             status_code=400,
@@ -76,5 +74,5 @@ def update_month_all_tenants(month: str):
     list_tenant_ids = crud_tenant.get_all_tenants_id()
     for tenant_id in list_tenant_ids:
         tenant = crud_tenant.get_tenant_by_id(tenant_id)
-        process_monthly_tenant_reviews(tenant, month)
+        process_monthly_tenant_reviews(tenant, month, user_id)
     return {'Success': 'Tenants updated'}

@@ -6,11 +6,10 @@ from app.database.crud.crud_translation import get_df_translation_from_tenant_id
 from app.utils.database_queries import get_all_review_data_by_tenant_id
 from app.utils.pnn_func import run_prediction_pnn
 from app.utils.scraping_func import run_scrapping_trustpilot
-from app.utils.strapi_func import send_all_analysis
+from app.utils.strapi_func import send_all_analysis, send_notification_to_strapi
 from app.utils.translation_func import translate_fr_to_en
 from app.utils.advanced_analyse_func import run_prediction_nested_1, run_prediction_nested_2
 from logging_config import logger
-
 
 def insert_data_to_db(df, table_name, engine, message='200'):
     """
@@ -25,7 +24,13 @@ def insert_data_to_db(df, table_name, engine, message='200'):
     capture_message(f"REQUESTS POSTGRES DONE - {message}")
     logger.info(f"BDD: Table {table_name} mis à jour avec succès - {message}")
       
-def process_tenant_reviews(tenant):
+def process_tenant_reviews(tenant, user_id=None):
+    
+    send_notification_to_strapi(
+        notification_type = "Ajout d'une entreprise",
+        notification_description = f'{tenant.name} en cours de préparation...',
+        user_id = user_id, 
+    )
     
     # Scrapping of Trustpilot and insert into database
     run_scrapping_trustpilot(tenant.id, tenant.url_web)
@@ -61,13 +66,26 @@ def process_tenant_reviews(tenant):
     # Send all analyses to Strapi BDD
     send_all_analysis(df_reviews)
     
-def process_monthly_tenant_reviews(tenant, month):
+    send_notification_to_strapi(
+        notification_type = "Ajout d'une entreprise",
+        notification_description = f'{tenant.name} : Les analyses sont disponible',
+        user_id = user_id, 
+    )
+    
+def process_monthly_tenant_reviews(tenant, month, user_id=None):
             
     try:
         test_year, _ = map(int, month.split('-'))
         assert len(str(test_year)) == 4 
     except Exception :
         raise('Error processing. Route monthly-process need month value in format year-month. Example: 2022-02')
+    
+    send_notification_to_strapi(
+        notification_type = "Ajout d'une entreprise",
+        notification_description = f'{tenant.name} en cours de préparation...',
+        user_id = user_id, 
+    )
+    
     
     # Faire scraping trustpilot avec argument month  
     run_scrapping_trustpilot(tenant.id, tenant.url_web, month=month)
@@ -106,7 +124,11 @@ def process_monthly_tenant_reviews(tenant, month):
     # Send all analyses to Strapi BDD
     send_all_analysis(df_reviews)
     
-    return {'success': f'Tenant id {tenant.id} updated for {month}'}
+    send_notification_to_strapi(
+        notification_type = "Ajout d'une entreprise",
+        notification_description = f'{tenant.name} : Les analyses sont disponible',
+        user_id = user_id, 
+    )
     
 
 def run_prediction(df, category):

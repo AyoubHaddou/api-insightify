@@ -4,6 +4,7 @@ from sentry_sdk import capture_message
 import requests 
 import os 
 import json 
+from app.utils.database_queries import get_all_review_data_by_tenant_id
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -56,6 +57,7 @@ def send_json_by_type(df, tenant_id, prediction_type):
         else:
             date_min = datetime(date_min.year, date_min.month + 1, 1)
 
+    # Send analysis 
     for month in dates_list:
         if prediction_type == 'PNN':
             result = prepare_pnn_data(df, month, tenant_id)  # Replace with actual preparation function
@@ -67,6 +69,26 @@ def send_json_by_type(df, tenant_id, prediction_type):
             requests.post('https://strapi.insightify.tech/api/analyses', headers=header, json=result)
         else:
             raise ValueError(f"Unknown type {type}")
+        
+    # Send reviews
+    cols = ['tenant_id', 'text_en','rating','prediction_2', 'prediction_3','source']
+    cols_strapi = ['tenant', 'description','rating','category', 'subcategory','source']
+    for prediction_1 in list_label_nested.keys():
+        for prediction_2 in list_label_nested[prediction_1].keys():
+            for prediction_3 in list_label_nested[prediction_1][prediction_2]:
+                df_reviews = get_all_review_data_by_tenant_id(tenant_id)
+                mask = (df_reviews.prediction_1 == prediction_1) & (df_reviews.prediction_2 == prediction_2) & (df_reviews.prediction_3 == prediction_3)
+                df_reviews = df_reviews[mask][0:5]
+                df_reviews = df_reviews[cols]
+                df_reviews.columns = cols_strapi
+                df_reviews['freemium'] = True
+                result = df_reviews.to_dict(orient='records')
+                if len(result) == 0 :
+                    continue 
+                for data in result:
+                    result = {'data': data}
+                    requests.post('https://strapi.insightify.tech/api/reviews', headers=header, json=result)
+    
         
 def send_all_analysis(df):
     types = ['PNN', 'text_negative', 'text_neutral', 'text_positive']
@@ -106,6 +128,16 @@ def prepare_pnn_data(df, month='2023-06', tenant_id=1):
     }
     return result
 
+def send_notification_to_strapi(notification_type, notification_description, user_id):
+    data = {
+        'type': notification_type,
+        'description': notification_description,
+        'read': False,
+        'user': user_id
+    }
+    result = {'data': data}
+    requests.post('https://strapi.insightify.tech/api/notifications', headers=header, json=result)
+    
 
 def prepare_advanced_analyse(df, month='2023-06', tenant_id=1, pnn_type='neutral'):
     

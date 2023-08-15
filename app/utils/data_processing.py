@@ -63,7 +63,7 @@ def process_tenant_reviews(tenant, user_id=1):
     logger.info('starting STEP : SENDING TO STRAPI')
 
     # # Send all analyses to Strapi BDD
-    # send_all_analysis(df_reviews)
+    send_all_analysis(df_reviews)
     
     send_notification_to_strapi(
         notification_type = "Ajout d'une entreprise",

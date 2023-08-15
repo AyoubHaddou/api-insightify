@@ -5,17 +5,14 @@ import pytest
 from app.utils.google_func import generate_entreprises_by_name, generate_reviews
 
 def test_generate_entreprises_by_name():
-    search_coord = "48.117761, -1.685869"
-    search_name = "norauto"
-    search_type = "car_repair"
+    search_coord = "50.6292,3.0573"
+    search_name = "Paul France"
+    search_type = "bakery"
 
     result = generate_entreprises_by_name(search_coord, search_name, search_type)
     
-    print('result of geenrate_entreprise', result)
-    print(result.columns)
-    
-    assert 'Norauto' in result['name'].values
-    assert len(result['name'].values) > 0
+    assert 'Paul' in result['name'].values
+    assert result.shape[0] > 0
     
 
 def test_generate_reviews():

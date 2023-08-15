@@ -129,6 +129,8 @@ def prepare_pnn_data(df, month='2023-06', tenant_id=1):
     return result
 
 def send_notification_to_strapi(notification_type, notification_description, user_id):
+    token = os.getenv("STRAPI_TOKEN")
+    header = {'Authorization': f'Bearer {token}'}
     data = {
         'type': notification_type,
         'description': notification_description,

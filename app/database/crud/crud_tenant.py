@@ -6,6 +6,7 @@ from app.utils.data_processing import process_monthly_tenant_reviews, process_te
 from app.database.models.analysis import Analysis
 from app.database.models.entity import Entity
 from app.database.models.review import Review
+from app.database.models.translation import Translation
 from logging_config import logger
 
 def get_all_tenant():
@@ -31,7 +32,7 @@ def new_tenant(tenant_name, tenant_type, tenant_url_web):
 def get_all_tenants_id():
     return [tenant.id for tenant in db.query(Tenant).all()]
 
-def post_tenant(tenant_name, tenant_type, tenant_url_web, user_id=None):
+def post_tenant(tenant_name, tenant_type, tenant_url_web, user_id):
     """
     Args:
         name (str): The name of the tenant
@@ -60,7 +61,7 @@ def upadate_monthly_by_tenant(tenant_id, month, user_id):
     tenant = get_tenant_by_id(tenant_id)
     
     if tenant is None:
-        raise ValueError("Tenant object is None")
+        raise ValueError("Tenant is None")
     logger.info('starting monthly process')
 
     return process_monthly_tenant_reviews(tenant, month, user_id)
@@ -78,6 +79,10 @@ def delete_tenant_and_all_reviews(tenant_id):
     # Supprimer toutes les analyses liées aux commentaires du tenant en utilisant une liste en compréhension
     [delete(analysis) for analysis in db.query(Analysis).join(Review).filter(Review.tenant_id == tenant_id).all()]
     logger.info('Analysis deleted')
+    
+    # Supprimer toutes les traductions liées aux commentaires du tenant en utilisant une liste en compréhension
+    [delete(translation) for translation in db.query(Translation).join(Review).filter(Review.tenant_id == tenant_id).all()]
+    logger.info('Translation deleted')
 
     # Supprimer tous les commentaires liés au tenant en utilisant une liste en compréhension
     [delete(review) for review in db.query(

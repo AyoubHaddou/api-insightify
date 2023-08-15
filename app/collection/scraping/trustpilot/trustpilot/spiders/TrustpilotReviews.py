@@ -9,10 +9,11 @@ class TrustpilotreviewsSpider(CrawlSpider):
     name = 'trustpilotreviews'
     tenant_url = os.getenv('TENANT_URL')
     allowed_domains = ['trustpilot.com']
-    start_urls = [f'https://www.trustpilot.com/review/{tenant_url}?languages=all']
+    start_urls = [f'https://www.trustpilot.com/review/{tenant_url}']
 
     rules = (
         Rule(LinkExtractor(restrict_xpaths='section[class="styles_reviewsContainer__3_GQw"]'), callback='parse_item', follow=True),
+        Rule(LinkExtractor(allow=rf'review/{tenant_url}'), callback='parse_item', follow=True),
         Rule(LinkExtractor(allow=rf'review/{tenant_url}\?languages=all&page=\d+'), callback='parse_item', follow=True),
     )
     

@@ -24,7 +24,7 @@ def insert_data_to_db(df, table_name, engine, message='200'):
     capture_message(f"REQUESTS POSTGRES DONE - {message}")
     logger.info(f"BDD: Table {table_name} mis à jour avec succès - {message}")
       
-def process_tenant_reviews(tenant, user_id=None):
+def process_tenant_reviews(tenant, user_id=1):
     
     send_notification_to_strapi(
         notification_type = "Ajout d'une entreprise",
@@ -53,7 +53,6 @@ def process_tenant_reviews(tenant, user_id=None):
     for category in categories:
         suffixe = categories.index(category) + 1
         df_reviews = run_prediction(df_reviews, category)  # Replace 'run_prediction' with the actual prediction function
-        df_reviews[['review_id', f'type_{suffixe}', f'prediction_{suffixe}', f'score_{suffixe}']].to_csv(f'{category}-{tenant.name}.csv', index=False)
         insert_data_to_db(df_reviews[['review_id', f'type_{suffixe}', f'prediction_{suffixe}', f'score_{suffixe}']]
                           .rename(columns={f'type_{suffixe}': 'type', f'prediction_{suffixe}': 'prediction', f'score_{suffixe}': 'score'}),
                           table_name='analysis', engine=engine, message=f'Analysis {category} for {tenant.name}')
@@ -63,8 +62,8 @@ def process_tenant_reviews(tenant, user_id=None):
     
     logger.info('starting STEP : SENDING TO STRAPI')
 
-    # Send all analyses to Strapi BDD
-    send_all_analysis(df_reviews)
+    # # Send all analyses to Strapi BDD
+    # send_all_analysis(df_reviews)
     
     send_notification_to_strapi(
         notification_type = "Ajout d'une entreprise",

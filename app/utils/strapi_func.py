@@ -32,6 +32,7 @@ types_mapping = {
 }
 
 def send_json_by_type(df, tenant_id, prediction_type):
+    tenant_id = int(tenant_id)
     token = os.getenv("STRAPI_TOKEN")
     header = {'Authorization': f'Bearer {token}'}
 
@@ -60,11 +61,11 @@ def send_json_by_type(df, tenant_id, prediction_type):
     # Send analysis 
     for month in dates_list:
         if prediction_type == 'PNN':
-            result = prepare_pnn_data(df, month, tenant_id)  # Replace with actual preparation function
+            result = prepare_pnn_data(df, month, tenant_id) 
             result = {'data': result}
             requests.post('https://strapi.insightify.tech/api/analyses', headers=header, json=result)
         elif prediction_type in ["text_neutral", "text_positive", "text_negative"]:
-            result = prepare_advanced_analyse(df, month, tenant_id, types_mapping[prediction_type])  # Replace with actual preparation function
+            result = prepare_advanced_analyse(df, month, tenant_id, types_mapping[prediction_type]) 
             result = {'data': result}
             requests.post('https://strapi.insightify.tech/api/analyses', headers=header, json=result)
         else:
@@ -99,6 +100,8 @@ def send_all_analysis(df):
             
 
 def prepare_pnn_data(df, month='2023-06', tenant_id=1):
+    
+    tenant_id = int(tenant_id)
 
     df['date'] = pd.to_datetime(df['date'])
     df['date'] = df['date'].dt.strftime('%Y-%m')
@@ -109,7 +112,13 @@ def prepare_pnn_data(df, month='2023-06', tenant_id=1):
     
     df = df[mask]
     
-    df[['positive', 'negative', 'neutral']] = 0
+    # Set default values for the 'positive', 'negative', and 'neutral' columns
+    df.loc[:, ['positive', 'negative', 'neutral']] = 0
+
+    # Convert the columns to int type
+    df.loc[:, ['positive', 'negative', 'neutral']] = df[['positive', 'negative', 'neutral']].astype(int)
+
+    # Increment values based on conditions
     df.loc[df['prediction_1'] == 'positive', 'positive'] += 1
     df.loc[df['prediction_1'] == 'negative', 'negative'] += 1
     df.loc[df['prediction_1'] == 'neutral', 'neutral'] += 1
@@ -142,6 +151,8 @@ def send_notification_to_strapi(notification_type, notification_description, use
     
 
 def prepare_advanced_analyse(df, month='2023-06', tenant_id=1, pnn_type='neutral'):
+    
+    tenant_id = int(tenant_id)
     
     start_date = datetime.strptime(month, '%Y-%m')
     end_date = (start_date.replace(day=1) + pd.DateOffset(months=1) - pd.DateOffset(days=1)).strftime('%Y-%m-%d')

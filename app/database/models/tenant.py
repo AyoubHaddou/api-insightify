@@ -9,5 +9,6 @@ class Tenant(Base):
     name = Column(String)
     type = Column(String)
     website = Column(String)
+    strapi_tenant_id = Column(Integer)
 
     reviews = relationship("Review", backref="tenant")

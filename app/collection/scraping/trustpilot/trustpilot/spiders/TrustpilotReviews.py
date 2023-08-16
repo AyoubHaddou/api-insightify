@@ -7,7 +7,7 @@ load_dotenv()
 
 class TrustpilotreviewsSpider(CrawlSpider):
     name = 'trustpilotreviews'
-    tenant_url = os.getenv('TENANT_URL')
+    tenant_url = os.getenv('TENANT_WEBSITE')
     allowed_domains = ['trustpilot.com']
     start_urls = [f'https://www.trustpilot.com/review/{tenant_url}']
 

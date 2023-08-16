@@ -31,7 +31,7 @@ types_mapping = {
     'text_positive': 'positive',
 }
 
-def send_json_by_type(df, tenant_id, prediction_type):
+def send_json_by_type(df, tenant_id, prediction_type, strapi_tenant_id):
     tenant_id = int(tenant_id)
     token = os.getenv("STRAPI_TOKEN")
     header = {'Authorization': f'Bearer {token}'}
@@ -61,11 +61,11 @@ def send_json_by_type(df, tenant_id, prediction_type):
     # Send analysis 
     for month in dates_list:
         if prediction_type == 'PNN':
-            result = prepare_pnn_data(df, month, tenant_id) 
+            result = prepare_pnn_data(df, month, tenant_id, strapi_tenant_id) 
             result = {'data': result}
             requests.post('https://strapi.insightify.tech/api/analyses', headers=header, json=result)
         elif prediction_type in ["text_neutral", "text_positive", "text_negative"]:
-            result = prepare_advanced_analyse(df, month, tenant_id, types_mapping[prediction_type]) 
+            result = prepare_advanced_analyse(df, month, tenant_id, types_mapping[prediction_type], strapi_tenant_id) 
             result = {'data': result}
             requests.post('https://strapi.insightify.tech/api/analyses', headers=header, json=result)
         else:
@@ -91,17 +91,17 @@ def send_json_by_type(df, tenant_id, prediction_type):
                     requests.post('https://strapi.insightify.tech/api/reviews', headers=header, json=result)
     
         
-def send_all_analysis(df):
+def send_all_analysis(df, strapi_tenant_id):
     types = ['PNN', 'text_negative', 'text_neutral', 'text_positive']
     for tenant_id in df.tenant_id.unique():
         for prediction_type in types:
-            send_json_by_type(df, tenant_id, prediction_type)
+            send_json_by_type(df, tenant_id, prediction_type, strapi_tenant_id)
             capture_message("REQUESTS STRAPI DONE")
             
 
-def prepare_pnn_data(df, month='2023-06', tenant_id=1):
+def prepare_pnn_data(df, strapi_tenant_id, month='2023-06'):
     
-    tenant_id = int(tenant_id)
+    tenant_id = int(strapi_tenant_id)
 
     df['date'] = pd.to_datetime(df['date'])
     df['date'] = df['date'].dt.strftime('%Y-%m')
@@ -123,7 +123,7 @@ def prepare_pnn_data(df, month='2023-06', tenant_id=1):
 
     result = {
         'data': json.dumps([data_dict[0]]) if len(data_dict) > 0 else json.dumps([{'positive': 0, 'negative': 0, 'neutral': 0}]),
-        'tenant': int(tenant_id),
+        'tenant': int(strapi_tenant_id),
         'type': 'PNN',
         'from': start_date.strftime('%Y-%m-%d'),
         'to': end_date,
@@ -144,7 +144,7 @@ def send_notification_to_strapi(notification_type, notification_description, use
     requests.post('https://strapi.insightify.tech/api/notifications', headers=header, json=result)
     
 
-def prepare_advanced_analyse(df, month='2023-06', tenant_id=1, pnn_type='neutral'):
+def prepare_advanced_analyse(df, strapi_tenant_id, month='2023-06', tenant_id=1, pnn_type='neutral'):
     
     tenant_id = int(tenant_id)
     
@@ -175,7 +175,7 @@ def prepare_advanced_analyse(df, month='2023-06', tenant_id=1, pnn_type='neutral
             analyse[key] = analyse_key
             
     analyse = {'data': json.dumps([analyse])}
-    analyse['tenant'] = int(tenant_id)
+    analyse['tenant'] = int(strapi_tenant_id)
     analyse['type'] = f'text {pnn_type}'.upper()
     analyse['from'] = start_date.strftime('%Y-%m-%d')
     analyse['to'] = end_date

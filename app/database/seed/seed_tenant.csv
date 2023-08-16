@@ -1,5 +1,5 @@
-id,name,type,website
-1,Auchan,store,www.auchan.fr
-2,Decathlon,store,www.decathlon.fr
-3,Leroy Merlin,store,www.leroymerlin.fr
-4,Norauto,car_repair,www.norauto.fr
+id,name,type,website,strapi_tenant_id
+1,Auchan,store,www.auchan.fr,1
+2,Decathlon,store,www.decathlon.fr,2
+3,Leroy Merlin,store,www.leroymerlin.fr,3
+4,Norauto,car_repair,www.norauto.fr, 4

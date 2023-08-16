@@ -34,7 +34,7 @@ def post_tenant_by_name_and_url(tenant: Tenant):
             status_code=400,
             detail='You must give a name and url_web values.'
         )
-    crud_tenant.post_tenant(tenant.name, tenant.type, tenant.website, tenant.user_id)
+    crud_tenant.post_tenant(tenant.name, tenant.type, tenant.website, tenant.user_id, tenant.strapiTenantId)
 
 @router.post('/delete', dependencies=[Depends(security.is_authenticated)])
 def delete_tenant_by_id(tenant_id: int):

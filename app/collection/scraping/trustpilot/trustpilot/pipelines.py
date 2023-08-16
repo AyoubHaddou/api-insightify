@@ -94,7 +94,7 @@ class TrustpilotPipeline:
         print('shape after cleaning', df.shape)
         
         if df.shape[0] == 0:
-            tenant_url = os.getenv('TENANT_URL')
+            tenant_url = os.getenv('TENANT_WEBSITE')
             raise HTTPException(
                 status_code=401,
                 detail=f'0 row scraped with {tenant_url}.'

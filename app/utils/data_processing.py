@@ -24,7 +24,7 @@ def insert_data_to_db(df, table_name, engine, message='200'):
     capture_message(f"REQUESTS POSTGRES DONE - {message}")
     logger.info(f"BDD: Table {table_name} mis à jour avec succès - {message}")
       
-def process_tenant_reviews(tenant, user_id=1):
+def process_tenant_reviews(tenant, user_id, strapi_tenant_id):
     
     send_notification_to_strapi(
         notification_type = "Ajout d'une entreprise",
@@ -60,10 +60,10 @@ def process_tenant_reviews(tenant, user_id=1):
     # get reviews from tenant_id 
     df_reviews = get_all_review_data_by_tenant_id(tenant.id)
     
-    logger.info('starting STEP : SENDING TO STRAPI')
+    # logger.info('starting STEP : SENDING TO STRAPI')
 
-    # # Send all analyses to Strapi BDD
-    send_all_analysis(df_reviews)
+    # # # Send all analyses to Strapi BDD
+    send_all_analysis(df_reviews, strapi_tenant_id)
     
     send_notification_to_strapi(
         notification_type = "Ajout d'une entreprise",
@@ -121,7 +121,7 @@ def process_monthly_tenant_reviews(tenant, month, user_id=None):
     logger.info('starting STEP : SENDING TO STRAPI')
     
     # Send all analyses to Strapi BDD
-    send_all_analysis(df_reviews)
+    send_all_analysis(df_reviews, strapi_tenant_id)
     
     send_notification_to_strapi(
         notification_type = "Ajout d'une entreprise",

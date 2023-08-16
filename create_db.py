@@ -11,10 +11,13 @@ from logging_config import logger
 
 def init_db():
     if not database_exists(engine.url):
+        print(engine.url)
         create_database(engine.url)
         logger.info('BDD CREATED')
-    Base.metadata.drop_all(engine)
-    logger.info('ALL TABLES DELETED')
+        
+    # Base.metadata.drop_all(engine)
+    # logger.info('ALL TABLES DELETED')
+    
     if not engine.has_table(Tenant.__tablename__):
         Base.metadata.create_all(engine)
         logger.info("TABLES CREER AVEC SUCCES")

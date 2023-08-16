@@ -23,8 +23,8 @@ def get_tenant_by_id(tenant_id):
 def get_tenant_by_name(name):
     return db.query(Tenant).filter_by(name=name).first()
 
-def new_tenant(tenant_name, tenant_type, tenant_url_web):
-    new_enreprise = Tenant(name=tenant_name, type=tenant_type, url_web=tenant_url_web)
+def new_tenant(tenant_name, tenant_type, tenant_website, strapi_tenant_id):
+    new_enreprise = Tenant(name=tenant_name, type=tenant_type, website=tenant_website, strapi_tenant_id=strapi_tenant_id)
     db.add(new_enreprise)
     db.commit()
     capture_message('NEW TENANT')
@@ -33,12 +33,12 @@ def new_tenant(tenant_name, tenant_type, tenant_url_web):
 def get_all_tenants_id():
     return [tenant.id for tenant in db.query(Tenant).all()]
 
-def post_tenant(tenant_name, tenant_type, tenant_url_web, user_id):
+def post_tenant(tenant_name, tenant_type, tenant_website, user_id, strapi_tenant_id):
     """
     Args:
         name (str): The name of the tenant
         type (str): the type of tenant (Should match with google type. Store - restaurant - supermarket - cafe - hotel - bakery - car_repair - hair_care)
-        url_web (str): Should be like www.domain.com 
+        website (str): Should be like www.domain.com 
     """
 
     # Check if Tenant is already in the database
@@ -50,14 +50,14 @@ def post_tenant(tenant_name, tenant_type, tenant_url_web, user_id):
         )
 
     # Create and get new tenant
-    new_tenant(tenant_name, tenant_type, tenant_url_web)
+    new_tenant(tenant_name, tenant_type, tenant_website, strapi_tenant_id)
     
     tenant = get_tenant_by_name(tenant_name)
     
     if tenant is None:
         raise ValueError("Tenant object is None")
     
-    process_tenant_reviews(tenant, user_id)
+    process_tenant_reviews(tenant, user_id, strapi_tenant_id)
 
 
 def upadate_monthly_by_tenant(tenant_id, month, user_id):

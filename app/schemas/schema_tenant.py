@@ -3,5 +3,6 @@ from pydantic import BaseModel
 class Tenant(BaseModel):
     name: str 
     type: str
-    url_web: str
+    website: str
     user_id : int 
+    strapiTenantId : int 

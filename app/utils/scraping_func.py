@@ -4,11 +4,11 @@ import os
 from logging_config import logger
 
 
-def run_scrapping_trustpilot(tenant_id, url_web, month='None'):
+def run_scrapping_trustpilot(tenant_id, website, month='None'):
     
     logger.info('STEP : STARTING TRUSTILOT SCRAPING')
 
-    os.environ['TENANT_URL'] = url_web
+    os.environ['TENANT_WEBSITE'] = website
     os.environ['TENANT_ID'] = str(tenant_id) 
     os.environ['TENANT_MONTH'] = month
     
@@ -40,12 +40,12 @@ def run_scrapping_trustpilot(tenant_id, url_web, month='None'):
 # from scrapy.crawler import CrawlerProcess
 # from app.collection.scraping.trustpilot.trustpilot.spiders import TrustpilotreviewsSpider  # Adjust the import path
 
-# def run_scrapping_trustpilot(tenant_id, url_web, month=None):
+# def run_scrapping_trustpilot(tenant_id, website, month=None):
 #     logger.info('Starting scraping function for trustpilot')
 
 #     # Create a Scrapy settings dictionary
 #     settings = {
-#         'TENANT_URL': url_web,
+#         'TENANT_WEBSITE': website,
 #         'TENANT_ID': str(tenant_id),
 #         'TENANT_MONTH': month,
 #         # Add other Scrapy settings here

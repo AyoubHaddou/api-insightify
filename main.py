@@ -5,7 +5,7 @@ from routes.index import router as api_router
 import sentry_sdk
 
 sentry_sdk.init(
-    dsn="https://0073014a6458f1c0f7f645c744404083@o4505619604635648.ingest.sentry.io/4505640867201024",
+    dsn="https://db70b5214cb646951529ab4064f946bf@o4505717202747392.ingest.sentry.io/4505717204582400",
     traces_sample_rate=1.0,
 )
 

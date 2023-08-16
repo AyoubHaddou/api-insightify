@@ -61,19 +61,19 @@ def send_json_by_type(df, tenant_id, prediction_type, strapi_tenant_id):
     # Send analysis 
     for month in dates_list:
         if prediction_type == 'PNN':
-            result = prepare_pnn_data(df, tenant_id, strapi_tenant_id, month=month) 
+            result = prepare_pnn_data(df, tenant_id=tenant_id, strapi_tenant_id=strapi_tenant_id, month=month) 
             result = {'data': result}
             requests.post('https://strapi.insightify.tech/api/analyses', headers=header, json=result)
         elif prediction_type in ["text_neutral", "text_positive", "text_negative"]:
-            result = prepare_advanced_analyse(df, month, tenant_id, types_mapping[prediction_type], strapi_tenant_id) 
+            result = prepare_advanced_analyse(df, month=month, tenant_id=tenant_id, pnn_type=types_mapping[prediction_type], strapi_tenant_id=strapi_tenant_id) 
             result = {'data': result}
             requests.post('https://strapi.insightify.tech/api/analyses', headers=header, json=result)
         else:
             raise ValueError(f"Unknown type {type}")
         
     # Send reviews
-    cols = ['tenant_id', 'text_en','rating','prediction_2', 'prediction_3','source']
-    cols_strapi = ['tenant', 'description','rating','category', 'subcategory','source']
+    cols = ['strapi_tenant_id', 'text_en', 'text', 'rating','prediction_2', 'prediction_3','source']
+    cols_strapi = ['tenant', 'description', 'original_description', 'rating','category', 'subcategory','source']
     for prediction_1 in list_label_nested.keys():
         for prediction_2 in list_label_nested[prediction_1].keys():
             for prediction_3 in list_label_nested[prediction_1][prediction_2]:
@@ -84,7 +84,7 @@ def send_json_by_type(df, tenant_id, prediction_type, strapi_tenant_id):
                 df_reviews.columns = cols_strapi
                 df_reviews['freemium'] = True
                 result = df_reviews.to_dict(orient='records')
-                if len(result) == 0 :
+                if (len(result) == 0 ) and (prediction_3 != list_label_nested[prediction_1][prediction_2][-1] ):
                     continue 
                 for data in result:
                     result = {'data': data}

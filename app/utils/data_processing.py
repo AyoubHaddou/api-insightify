@@ -67,11 +67,11 @@ def process_tenant_reviews(tenant, user_id, strapi_tenant_id):
     
     send_notification_to_strapi(
         notification_type = "Ajout d'une entreprise",
-        notification_description = f'{tenant.name} : Les analyses sont disponible',
+        notification_description = f'{tenant.name} : Les analyses sont disponibles',
         user_id = user_id, 
     )
     
-def process_monthly_tenant_reviews(tenant, month, user_id=None):
+def process_monthly_tenant_reviews(tenant, month, user_id=1):
             
     try:
         test_year, _ = map(int, month.split('-'))
@@ -121,7 +121,7 @@ def process_monthly_tenant_reviews(tenant, month, user_id=None):
     logger.info('starting STEP : SENDING TO STRAPI')
     
     # Send all analyses to Strapi BDD
-    send_all_analysis(df_reviews, strapi_tenant_id)
+    send_all_analysis(df_reviews, tenant.strapi_tenant_id)
     
     send_notification_to_strapi(
         notification_type = "Ajout d'une entreprise",

@@ -61,7 +61,7 @@ def send_json_by_type(df, tenant_id, prediction_type, strapi_tenant_id):
     # Send analysis 
     for month in dates_list:
         if prediction_type == 'PNN':
-            result = prepare_pnn_data(df, month, tenant_id, strapi_tenant_id) 
+            result = prepare_pnn_data(df, tenant_id, strapi_tenant_id, month=month) 
             result = {'data': result}
             requests.post('https://strapi.insightify.tech/api/analyses', headers=header, json=result)
         elif prediction_type in ["text_neutral", "text_positive", "text_negative"]:
@@ -99,9 +99,9 @@ def send_all_analysis(df, strapi_tenant_id):
             capture_message("REQUESTS STRAPI DONE")
             
 
-def prepare_pnn_data(df, strapi_tenant_id, month='2023-06'):
+def prepare_pnn_data(df, tenant_id, strapi_tenant_id, month='2023-06'):
     
-    tenant_id = int(strapi_tenant_id)
+    tenant_id = int(tenant_id)
 
     df['date'] = pd.to_datetime(df['date'])
     df['date'] = df['date'].dt.strftime('%Y-%m')

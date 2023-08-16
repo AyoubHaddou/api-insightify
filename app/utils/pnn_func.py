@@ -1,8 +1,6 @@
 import pandas as pd 
 from transformers import pipeline
 from sentry_sdk import capture_message
-from datetime import datetime
-import json 
 from logging_config import logger 
 sentiment_model = pipeline(model="IAyoub/finetuning-bert-sentiment-reviews-2")
 

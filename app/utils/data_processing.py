@@ -33,7 +33,7 @@ def process_tenant_reviews(tenant, user_id=1):
     )
     
     # Scrapping of Trustpilot and insert into database
-    run_scrapping_trustpilot(tenant.id, tenant.url_web)
+    run_scrapping_trustpilot(tenant.id, tenant.website)
     
     # RUN google api function and insert into database
     run_google_reviews_api(tenant.type, tenant.name, tenant.id)
@@ -87,7 +87,7 @@ def process_monthly_tenant_reviews(tenant, month, user_id=None):
     
     
     # Faire scraping trustpilot avec argument month  
-    run_scrapping_trustpilot(tenant.id, tenant.url_web, month=month)
+    run_scrapping_trustpilot(tenant.id, tenant.website, month=month)
     
     # Run google api 
     run_google_reviews_api(tenant.type, tenant.name, tenant.id, month=month)

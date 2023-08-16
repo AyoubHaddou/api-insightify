@@ -29,12 +29,12 @@ def get_tenant_by_name(name):
 
 @router.post('/new', dependencies=[Depends(security.is_authenticated)])
 def post_tenant_by_name_and_url(tenant: Tenant):
-    if tenant.name in ['', None] or tenant.url_web in ['', None]:
+    if tenant.name in ['', None] or tenant.website in ['', None]:
         raise HTTPException(
             status_code=400,
             detail='You must give a name and url_web values.'
         )
-    crud_tenant.post_tenant(tenant.name, tenant.type, tenant.url_web, tenant.user_id)
+    crud_tenant.post_tenant(tenant.name, tenant.type, tenant.website, tenant.user_id)
 
 @router.post('/delete', dependencies=[Depends(security.is_authenticated)])
 def delete_tenant_by_id(tenant_id: int):

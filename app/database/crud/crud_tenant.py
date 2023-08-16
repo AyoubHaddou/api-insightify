@@ -4,6 +4,7 @@ from sentry_sdk import capture_message
 from app.database.models.tenant import Tenant
 from app.utils.data_processing import process_monthly_tenant_reviews, process_tenant_reviews
 from app.database.models.analysis import Analysis
+from fastapi import HTTPException
 from app.database.models.entity import Entity
 from app.database.models.review import Review
 from app.database.models.translation import Translation
@@ -43,7 +44,10 @@ def post_tenant(tenant_name, tenant_type, tenant_url_web, user_id):
     # Check if Tenant is already in the database
     check_name = db.query(Tenant).filter_by(name=tenant_name).first()
     if check_name:
-        raise ("Tenant already exists")
+        raise HTTPException(
+            status_code=401,
+            detail=f'Tenant already exists {tenant_name}.'
+        )
 
     # Create and get new tenant
     new_tenant(tenant_name, tenant_type, tenant_url_web)

@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import pandas as pd
+from fastapi import HTTPException
 import re
 from dotenv import load_dotenv
 import os 
@@ -91,6 +92,13 @@ class TrustpilotPipeline:
             
         print('shape before cleaning', shape_before)
         print('shape after cleaning', df.shape)
+        
+        if df.shape[0] == 0:
+            tenant_url = os.getenv('TENANT_URL')
+            raise HTTPException(
+                status_code=401,
+                detail=f'0 row scraped with {tenant_url}.'
+        )
         
         print('tenant_month', TENANT_MONTH)
 

@@ -8,6 +8,6 @@ class Tenant(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
     type = Column(String)
-    url_web = Column(String)
+    website = Column(String)
 
     reviews = relationship("Review", backref="tenant")

@@ -112,13 +112,7 @@ def prepare_pnn_data(df, month='2023-06', tenant_id=1):
     
     df = df[mask]
     
-    # Set default values for the 'positive', 'negative', and 'neutral' columns
-    df.loc[:, ['positive', 'negative', 'neutral']] = 0
-
-    # Convert the columns to int type
-    df.loc[:, ['positive', 'negative', 'neutral']] = df[['positive', 'negative', 'neutral']].astype(int)
-
-    # Increment values based on conditions
+    df[['positive', 'negative', 'neutral']] = 0
     df.loc[df['prediction_1'] == 'positive', 'positive'] += 1
     df.loc[df['prediction_1'] == 'negative', 'negative'] += 1
     df.loc[df['prediction_1'] == 'neutral', 'neutral'] += 1

@@ -13,12 +13,12 @@ def run_google_reviews_api(tenant_type, tenant_name, tenant_id, month=None):
     if month is None :
                 
         first_coord = all_coord[0]
-        # other_coord = all_coord[1:]
+        other_coord = all_coord[1:]
         df_all = generate_entreprises_by_name(search_coord=first_coord, search_name=tenant_name, search_type=tenant_type)
         
-        # for coord in other_coord:
-        #     df_second = generate_entreprises_by_name(search_coord=coord, search_name=tenant_name, search_type=tenant_type)
-        #     df_all = pd.concat([df_all, df_second])
+        for coord in other_coord:
+            df_second = generate_entreprises_by_name(search_coord=coord, search_name=tenant_name, search_type=tenant_type)
+            df_all = pd.concat([df_all, df_second])
         
         capture_message('COLLECT BY GOOGLE API DONE')
         df_all['tenant_id'] = tenant_id

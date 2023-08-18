@@ -6,7 +6,7 @@ from app.database.crud.crud_translation import get_df_translation_from_tenant_id
 from app.utils.database_queries import get_all_review_data_by_tenant_id
 from app.utils.pnn_func import run_prediction_pnn
 from app.utils.scraping_func import run_scrapping_trustpilot
-from app.utils.strapi_func import send_all_analysis, send_notification_to_strapi
+from app.utils.strapi_func import send_all_analysis, send_notification_to_strapi, send_reviews_to_strapi
 from app.utils.translation_func import translate_fr_to_en
 from app.utils.advanced_analyse_func import run_prediction_nested_1, run_prediction_nested_2
 from logging_config import logger
@@ -59,17 +59,20 @@ def process_tenant_reviews(tenant, user_id, strapi_tenant_id):
         
     # get reviews from tenant_id 
     df_reviews = get_all_review_data_by_tenant_id(tenant.id)
-    
-    # logger.info('starting STEP : SENDING TO STRAPI')
 
-    # # # Send all analyses to Strapi BDD
+    logger.info('starting STEP : SENDING ANALYSIS TO STRAPI')
     send_all_analysis(df_reviews, strapi_tenant_id)
+    
+    logger.info('starting STEP : SENDING FREEMIUM REVIEWS TO STRAPI')
+    send_reviews_to_strapi(tenant.id)
     
     send_notification_to_strapi(
         notification_type = "Ajout d'une entreprise",
         notification_description = f'{tenant.name} : Les analyses sont disponibles',
         user_id = user_id, 
     )
+    logger.info('FINISH: All processes are complete')
+    
     
 def process_monthly_tenant_reviews(tenant, month, user_id=1):
             

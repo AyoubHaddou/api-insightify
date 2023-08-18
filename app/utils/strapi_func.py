@@ -30,11 +30,11 @@ types_mapping = {
     'text_negative': 'negative',
     'text_positive': 'positive',
 }
+token = os.getenv("STRAPI_TOKEN")
+header = {'Authorization': f'Bearer {token}'}
 
 def send_json_by_type(df, tenant_id, prediction_type, strapi_tenant_id):
     tenant_id = int(tenant_id)
-    token = os.getenv("STRAPI_TOKEN")
-    header = {'Authorization': f'Bearer {token}'}
 
     # Conversion des dates en objets datetime
     df['date'] = pd.to_datetime(df['date'])
@@ -71,6 +71,7 @@ def send_json_by_type(df, tenant_id, prediction_type, strapi_tenant_id):
         else:
             raise ValueError(f"Unknown type {type}")
         
+def send_reviews_to_strapi(tenant_id):
     # Send reviews
     cols = ['strapi_tenant_id', 'text_en', 'text', 'rating','prediction_2', 'prediction_3','source']
     cols_strapi = ['tenant', 'description', 'original_description', 'rating','category', 'subcategory','source']
@@ -132,8 +133,6 @@ def prepare_pnn_data(df, tenant_id, strapi_tenant_id, month='2023-06'):
     return result
 
 def send_notification_to_strapi(notification_type, notification_description, user_id):
-    token = os.getenv("STRAPI_TOKEN")
-    header = {'Authorization': f'Bearer {token}'}
     data = {
         'type': notification_type,
         'description': notification_description,
